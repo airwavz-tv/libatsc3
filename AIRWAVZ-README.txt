@@ -1,4 +1,4 @@
-AIRWAVZ-README 3/9/2020
+AIRWAVZ-README 4/30/2020
 
 To demonstrate the correct usage of the Airwavz RedZone Receiver SDK on
 non-rooted Android devices we have added some basic support for the
@@ -23,8 +23,7 @@ Place a copy of the contents of the lib/android directory from the SDK into:
     .../sample_app_no_phy/app/src/main/jniLibs/
     
 Copy both the armeabi-v7a folder and the arm64-v8a folder if you want support
-for both 32 and 64 bit. Note that our current test enviornment utilizes the
-32 bit armeabi-v7a ABI on Android.
+for both 32 and 64 bit.
 
 Once this is complete you should be able to import the project into Android
 Studio and build it. Our tests have been conducted using the latest Android
@@ -50,10 +49,8 @@ Once the device is open the "Tune" button should be available to tune the device
 The default frequency in the Andoird UI is currently 647MHz.
 
 Once tuned the "RF Stats" button will show the current Lock, RSSi, and SNR.
+You should see the SLS and be able to pick and then Play a service.
 
-We have not completed any further integration with libatsc3 at this time. The
-purpose is just to demonstrate how to use the device in a non-root Andrroid
-enviornment.
 
 
 

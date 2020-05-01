@@ -662,7 +662,7 @@ uint8_t* mmt_scte35_message_payload_parse(mmt_signalling_message_header_and_payl
 
 		buf = extract(buf, (uint8_t*)&mmt_scte35_signal_descriptor->signal_byte, mmt_scte35_signal_descriptor->signal_length);
 		mmt_scte35_message_payload_add_mmt_scte35_signal_descriptor(&mmt_signalling_message_header_and_payload->message_payload.mmt_scte35_message_payload, mmt_scte35_signal_descriptor);
-		__MMSM_INFO("mmt_scte35_message_payload_parse: adding signal at NTP_timestamp: %llu, PTS: %llu", mmt_scte35_signal_descriptor->ntp_timestamp, mmt_scte35_signal_descriptor->pts_timestamp);
+		__MMSM_INFO("mmt_scte35_message_payload_parse: adding signal at NTP_timestamp: %llu, PTS: %"PRIu64"", mmt_scte35_signal_descriptor->ntp_timestamp, mmt_scte35_signal_descriptor->pts_timestamp);
 	}
 
 parse_incomplete:
@@ -873,7 +873,7 @@ void mpt_message_dump(mmt_signalling_message_header_and_payload_t* mmt_signallin
             if(mp_table_asset_row->mmt_signalling_message_mpu_timestamp_descriptor) {
                 for(int i=0; i < mp_table_asset_row->mmt_signalling_message_mpu_timestamp_descriptor->mpu_tuple_n; i++) {
                     __MMSM_DEBUG("   mpu_timestamp_descriptor %u, mpu_sequence_number: %u", i, mp_table_asset_row->mmt_signalling_message_mpu_timestamp_descriptor->mpu_tuple[i].mpu_sequence_number);
-                    __MMSM_DEBUG("   mpu_timestamp_descriptor %u, mpu_presentation_time: %llu", i, mp_table_asset_row->mmt_signalling_message_mpu_timestamp_descriptor->mpu_tuple[i].mpu_presentation_time);
+                    __MMSM_DEBUG("   mpu_timestamp_descriptor %u, mpu_presentation_time: %"PRIu64"", i, mp_table_asset_row->mmt_signalling_message_mpu_timestamp_descriptor->mpu_tuple[i].mpu_presentation_time);
                 }
             }
 		}

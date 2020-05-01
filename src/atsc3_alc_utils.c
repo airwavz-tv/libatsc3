@@ -416,7 +416,8 @@ char* alc_packet_dump_to_object_get_s_tsid_filename(udp_flow_t* udp_flow, alc_pa
                                                 } else if(location_found[pos] == 0x0d || location_found[pos] == 0x0a) {
                                                     endofline = location_found + (pos-1);
                                                     content_location = strndup(location_found, pos);
-                                                    __ALC_UTILS_DEBUG("ALC MDE: local entity mode filename is: %c", content_location);
+                                                    // JBC was __ALC_UTILS_DEBUG("ALC MDE: local entity mode filename is: %c", content_location);
+                                                    __ALC_UTILS_DEBUG("ALC MDE: local entity mode filename is: %s", content_location);
 
                                                     bool has_additional_headers = false;
                                                     int newline_count = 1;
@@ -432,7 +433,7 @@ char* alc_packet_dump_to_object_get_s_tsid_filename(udp_flow_t* udp_flow, alc_pa
                                                                 //break out and trim our file
                                                                 int trim_size = (location_found + pos) - temp_content_header;
                                                                 int new_mde_payload_size = st.st_size - trim_size;
-                                                                __ALC_UTILS_INFO("ALC MDE: entity mode, original size: %d, header cut is: %d bytes, new mde size is: %d", st.st_size, trim_size, new_mde_payload_size);
+                                                                __ALC_UTILS_INFO("ALC MDE: entity mode, original size: %ld, header cut is: %d bytes, new mde size is: %d", st.st_size, trim_size, new_mde_payload_size);
 
                                                                 if(trim_size > 0 && new_mde_payload_size > 0) {
                                                                     uint8_t* to_trim_payload = calloc(new_mde_payload_size, sizeof(uint8_t));
@@ -441,14 +442,16 @@ char* alc_packet_dump_to_object_get_s_tsid_filename(udp_flow_t* udp_flow, alc_pa
                                                                     fread(to_trim_payload, new_mde_payload_size, 1, temp_fp);
                                                                     int ret = ftruncate(fileno(temp_fp), new_mde_payload_size);
                                                                     //printf("ftruncate for fd: %d, ret is: %d", fileno(temp_fp), ret);
-                                                                    fsync(temp_fp);
+                                                                    // JBC was fsync(temp_fp);
+                                                                    fsync(fileno(temp_fp));
                                                                     fseek(temp_fp, 0, SEEK_SET);
                                                                     fwrite(to_trim_payload, new_mde_payload_size, 1, temp_fp);
                                                                    /* for(int i=0; i < 32; i++) {
                                                                         printf("to_trim_payload[%d]: 0x%02x (%c)", i, to_trim_payload[i], to_trim_payload[i]);
                                                                     }*/
 
-                                                                    fsync(temp_fp);
+                                                                    // JBC was fsync(temp_fp);
+                                                                    fsync(fileno(temp_fp));
 
                                                                     free(to_trim_payload);
                                                                     to_trim_payload = NULL;
@@ -673,7 +676,7 @@ int atsc3_alc_packet_persist_to_toi_resource_process_sls_mbms_and_emit_callback(
             char* final_mbms_toi_filename = alc_packet_dump_to_object_get_filename_tsi_toi(udp_flow, 0, alc_packet->def_lct_hdr->toi);
             rename(temporary_filename, final_mbms_toi_filename);
 
-            __ALC_UTILS_IOTRACE("ALC: service_id: %u, ------ TSI of 0, TOI: %d, transfer_len: %d, final object name: %s, calling atsc3_route_sls_process_from_alc_packet_and_file",
+            __ALC_UTILS_IOTRACE("ALC: service_id: %u, ------ TSI of 0, TOI: %d, transfer_len: %llu, final object name: %s, calling atsc3_route_sls_process_from_alc_packet_and_file",
             		lls_sls_alc_monitor->atsc3_lls_slt_service->service_id,
             		alc_packet->def_lct_hdr->toi,
             		alc_packet->transfer_len,
@@ -686,7 +689,8 @@ int atsc3_alc_packet_persist_to_toi_resource_process_sls_mbms_and_emit_callback(
      
             if(strncmp(temporary_filename, s_tsid_content_location, __MIN(strlen(temporary_filename), strlen(s_tsid_content_location))) !=0) {
                 char new_file_name_raw_buffer[1024] = { 0 };
-                char* new_file_name = &new_file_name_raw_buffer;
+                // JBC char* new_file_name = &new_file_name_raw_buffer;
+                char* new_file_name = new_file_name_raw_buffer;
                 snprintf(new_file_name_raw_buffer, 1024, __ALC_DUMP_OUTPUT_PATH__"%d/%s", lls_sls_alc_monitor->atsc3_lls_slt_service->service_id, s_tsid_content_location);
                 
                 //todo: jjustman-2019-11-15: sanatize path parameter for .. or other traversal attacks

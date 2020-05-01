@@ -19,10 +19,7 @@ using namespace std;
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
-
-//#include "at3drv_api.h"
-
-#define DEBUG 1
+//#define DEBUG 1
 
 #include "android/log.h"
 #define MODULE_NAME "intf"

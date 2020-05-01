@@ -61,7 +61,7 @@ atsc3_sl_tlv_payload_t* atsc3_sl_tlv_payload_parse_from_block_t(block_t* atsc3_s
                                      buf_start,
                                      buf,
                                      buf_end,
-                                     (buf - buf_start));
+                                     (int)(buf - buf_start));
             }
         }
 

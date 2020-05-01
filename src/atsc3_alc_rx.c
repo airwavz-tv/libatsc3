@@ -647,7 +647,7 @@ int alc_rx_analyze_packet_a331_compliant(char *data, int len, alc_packet_t** alc
 	memcpy(alc_packet->alc_payload, &data[header_pos], alc_packet->alc_len);
 
 	//header_pos: %u,
-	ALC_RX_DEBUG("ALC: tsi: %u, toi: %u, fec_encoding_id: %u, SBN: %u, esi: %u, packet length: %u, start_offset: %u, transfer_len: %llu, codepoint: %u, close_session: %u, close_object: %u, ext_route_presentation_ntp_timestamp: %llu",
+	ALC_RX_DEBUG("ALC: tsi: %u, toi: %u, fec_encoding_id: %u, SBN: %u, esi: %u, packet length: %u, start_offset: %u, transfer_len: %llu, codepoint: %u, close_session: %u, close_object: %u, ext_route_presentation_ntp_timestamp: %"PRIu64"",
 			alc_packet->def_lct_hdr->tsi,
 			alc_packet->def_lct_hdr->toi,
 			alc_packet->fec_encoding_id,
@@ -661,7 +661,7 @@ int alc_rx_analyze_packet_a331_compliant(char *data, int len, alc_packet_t** alc
 			alc_packet->close_object_flag,
 			alc_packet->ext_route_presentation_ntp_timestamp);
 
-	ALC_RX_TRACE_TAB("ALC\ttsi\t%u\ttoi\t%u\tfec_encoding_id\t%u\tSBN\t%u\tesi\t%u\tpacket_length\t%u\tstart_offset\t%u\ttransfer_len\t%llu\tcodepoint\t%u\tclose_session\t%u\tclose_object\t%u\text_route_presentation_ntp_timestamp\t%llu",
+	ALC_RX_TRACE_TAB("ALC\ttsi\t%u\ttoi\t%u\tfec_encoding_id\t%u\tSBN\t%u\tesi\t%u\tpacket_length\t%u\tstart_offset\t%u\ttransfer_len\t%llu\tcodepoint\t%u\tclose_session\t%u\tclose_object\t%u\text_route_presentation_ntp_timestamp\t%"PRIu64"",
 				alc_packet->def_lct_hdr->tsi,
 				alc_packet->def_lct_hdr->toi,
 				alc_packet->fec_encoding_id,

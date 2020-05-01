@@ -8,14 +8,41 @@
  *      https://tools.ietf.org/html/rfc3550
  *
  
- One of the principal functions of the Scheduler is to generate Preamble data for the Transmitter(s) that it controls. Conceptually, as shown in Figure 4.2, the Preamble generation function is assigned to a Preamble Generator, which is part of the Broadcast Gateway. The Preamble Generator outputs the data to be transmitted to receivers to allow their configurations to match the processes and parameters that will be used in Transmission. As the Transmitter(s) process the Preamble data for emission to receivers, the Preamble data also will be used by the Transmitter(s) to set up the Input Formatting, Coded Modulation, Framing/Structure, and Waveform Generation so that the emitted waveform will match what receivers will be instructed by the Preamble to receive. The exact format for the Preamble data is specified in [3].
+ One of the principal functions of the Scheduler is to generate Preamble data for the Transmitter(s)
+ that it controls. Conceptually, as shown in Figure 4.2, the Preamble generation function is assigned
+ to a Preamble Generator, which is part of the Broadcast Gateway. The Preamble Generator outputs the
+ data to be transmitted to receivers to allow their configurations to match the processes and parameters
+ that will be used in Transmission. As the Transmitter(s) process the Preamble data for emission to receivers,
+ the Preamble data also will be used by the Transmitter(s) to set up the Input Formatting, Coded Modulation,
+ Framing/Structure, and Waveform Generation so that the emitted waveform will match what receivers will be
+ instructed by the Preamble to receive. The exact format for the Preamble data is specified in [3].
  
- Similarly, the Scheduler must control the generation and emission of Bootstrap waveforms by the Transmitter(s). To accomplish this, a data structure, similar to the Preamble, is defined in this document to carry Timing and Management (T&M) data to the Transmitters. Conceptually, as shown in Figure 4.2, a Timing and Management Data Generator is included in the Broadcast Gateway and provides the function under control of the Scheduler.
+ Similarly, the Scheduler must control the generation and emission of Bootstrap waveforms by the Transmitter(s).
+ To accomplish this, a data structure, similar to the Preamble, is defined in this document to carry Timing and
+ Management (T&M) data to the Transmitters. Conceptually, as shown in Figure 4.2, a Timing and Management Data
+ Generator is included in the Broadcast Gateway and provides the function under control of the Scheduler.
  
  
  Port Assignments
- Each Multicast destination address has usable port numbers from 1 through 65535. Values of 30000 – 30366 inclusive shall be used for this standard. Ports 30000 through 30063 shall be used to identify inner Tunneled Streams having destinations of PLPs 0 through 63, respectively; port 30064 shall be used to identify the inner Tunneled Stream carrying the Preamble data; port 30065 shall be used to identify the inner Tunneled Stream carrying the Timing and Management Data; and port 30066 shall be used to identify the inner Tunneled Stream carrying the Security Data Stream. All the listed Tunneled Packet Streams (i.e., Preamble, Timing and Management, Baseband Packets, and Security Data) required to populate an RF channel comprise a group of inner Tunneled Packet Streams.
- The arrangement of UDP port numbers described above for an inner group of Tunneled Packet Streams can be offset in steps of 100 to permit addressing similar sets of Tunneled Packet groups intended for delivery to other Transmitters over the same STLTP. In such cases, an offset value for the port numbers for Transmitter P (where P is a value from 0 – 3) can obtained from Offset [P] = P × 100. Alternatively, the number P can be used as the middle digit of a 5-digit number, with the first two digits being ‘30’ and the last two digits ranging from ‘00’ through ’66’. (See Table 8.7 for the semantics of the number_of_channels field.) For example, in a case in which a Broadcast Gateway processes two channels, respectively A and B, the group of inner Tunneled Packet Streams of channel A would use the UDP port range from 30000 to 30066 (offset 0), while the group of inner Tunneled Packet Streams of channel B would use the UDP range 30100 to 30166 (offset 100). All these inner Tunneled Packet Streams then would be carried by the same Stream of Tunnel Packets. See Annex E for descriptions of the use of multichannel STLTP in Channel Bonding cases.
+ Each Multicast destination address has usable port numbers from 1 through 65535. Values of 30000 – 30366
+ inclusive shall be used for this standard. Ports 30000 through 30063 shall be used to identify inner
+ Tunneled Streams having destinations of PLPs 0 through 63, respectively; port 30064 shall be used to
+ identify the inner Tunneled Stream carrying the Preamble data; port 30065 shall be used to identify the
+ inner Tunneled Stream carrying the Timing and Management Data; and port 30066 shall be used to identify the
+ inner Tunneled Stream carrying the Security Data Stream. All the listed Tunneled Packet Streams
+ (i.e., Preamble, Timing and Management, Baseband Packets, and Security Data) required to populate an RF channel
+ comprise a group of inner Tunneled Packet Streams.
+ The arrangement of UDP port numbers described above for an inner group of Tunneled Packet Streams can be offset
+ in steps of 100 to permit addressing similar sets of Tunneled Packet groups intended for delivery to other
+ Transmitters over the same STLTP. In such cases, an offset value for the port numbers for Transmitter P
+ (where P is a value from 0 – 3) can obtained from Offset [P] = P × 100. Alternatively, the number P can be used
+ as the middle digit of a 5-digit number, with the first two digits being ‘30’ and the last two digits ranging
+ from ‘00’ through ’66’. (See Table 8.7 for the semantics of the number_of_channels field.) For example,
+ in a case in which a Broadcast Gateway processes two channels, respectively A and B, the group of inner Tunneled
+ Packet Streams of channel A would use the UDP port range from 30000 to 30066 (offset 0), while the group of inner
+ Tunneled Packet Streams of channel B would use the UDP range 30100 to 30166 (offset 100). All these inner Tunneled
+ Packet Streams then would be carried by the same Stream of Tunnel Packets. See Annex E for descriptions of the use
+ of multichannel STLTP in Channel Bonding cases.
  
  The RTP header fields of the TMP packet set shall be as described below, configured with the marker (M) bit of the packet containing the beginning of a TMP () data structure set to ‘1’. The marker (M) bits of the remaining packets shall be set to ‘0’. This allows the transmission system on the consumer end of the STL to reconstruct the TMP () data structure after any resequencing takes place. The timestamps of the packets of a given TMP packet set shall have the same values. The timestamp values are derived from a subset of the Bootstrap_Timing_Data, providing a mechanism to uniquely associate each of the TMP packets with a specific Physical Layer frame. The RTP header fields shall follow the syntax defined in RFC 3550 [6] with the following additional constraints:
  
@@ -967,7 +994,7 @@ atsc3_timing_management_packet_t* atsc3_stltp_parse_timing_management_packet(ats
     }
     
     //process bootstrap_timing_data
-    __STLTP_PARSER_DEBUG("timing management: processing bootstrap_timing with %d num_emission_tim entries at pos: %d", atsc3_timing_management_packet->num_emission_tim, binary_payload - binary_payload_start);
+    __STLTP_PARSER_DEBUG("timing management: processing bootstrap_timing with %d num_emission_tim entries at pos: %d", atsc3_timing_management_packet->num_emission_tim, (int)(binary_payload - binary_payload_start));
     for(int i=0; i <= atsc3_timing_management_packet->num_emission_tim; i++) {
         atsc3_bootstrap_timing_data_t* atsc3_bootstrap_timing_data = calloc(1, sizeof(atsc3_bootstrap_timing_data_t));
         atsc3_bootstrap_timing_data->seconds = ntohl(*((uint32_t*)binary_payload));
@@ -981,7 +1008,7 @@ atsc3_timing_management_packet_t* atsc3_stltp_parse_timing_management_packet(ats
     }
         
     //process per_transmitter_data
-    __STLTP_PARSER_DEBUG("timing management: processing per transmitter data with %d per_transmitter_data entries, pos: %d", atsc3_timing_management_packet->num_xmtrs_in_group, binary_payload - binary_payload_start);
+    __STLTP_PARSER_DEBUG("timing management: processing per transmitter data with %d per_transmitter_data entries, pos: %d", atsc3_timing_management_packet->num_xmtrs_in_group, (int)(binary_payload - binary_payload_start));
 
     for(int i=0; i <= atsc3_timing_management_packet->num_xmtrs_in_group; i++) {
         //atsc3_per_transmitter_data_t
