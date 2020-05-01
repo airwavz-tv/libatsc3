@@ -102,6 +102,14 @@ lls_sls_alc_session_t* lls_slt_alc_session_find(lls_slt_monitor_t* lls_slt_monit
 	return NULL;
 }
 
+/*
+ 
+ jjustman-2020-03-25 - workaround warning: set our lls_slt_monitor->lls_sls_alc_monitor if we have a matching session
+ TODO: deprecate this method and instead use atsc3_lls_sls_alc_monitor_find_from_udp_packet(0
+ 
+ lls_sls_alc_monitor
+ 
+ */
 
 lls_sls_alc_session_t* lls_slt_alc_session_find_from_udp_packet(lls_slt_monitor_t* lls_slt_monitor, uint32_t src_ip_addr, uint32_t dst_ip_addr, uint16_t dst_port) {
 
@@ -113,7 +121,26 @@ lls_sls_alc_session_t* lls_slt_alc_session_find_from_udp_packet(lls_slt_monitor_
 
 			if((lls_slt_alc_session->sls_relax_source_ip_check || (!lls_slt_alc_session->sls_relax_source_ip_check && lls_slt_alc_session->sls_source_ip_address == src_ip_addr)) &&
 				lls_slt_alc_session->sls_destination_ip_address == dst_ip_addr && lls_slt_alc_session->sls_destination_udp_port == dst_port) {
+				_ATSC3_LLS_ALC_UTILS_TRACE("lls_slt_alc_session_find_from_udp_packet: checking lls_slt_monitor->lls_sls_alc_monitor");
+			
+				for(int k=0; k < lls_slt_monitor->lls_sls_alc_monitor_v.count; k++) {
+					lls_sls_alc_monitor_t* lls_sls_alc_monitor = lls_slt_monitor->lls_sls_alc_monitor_v.data[k];
+					_ATSC3_LLS_ALC_UTILS_TRACE("lls_slt_alc_session_find_from_udp_packet: checking lls_slt_monitor->lls_sls_alc_monitor_v.data[%d] from: %p (service_id: %d) with: %p (service_id: %d)",
+											  k,
+											  lls_slt_monitor->lls_sls_alc_monitor,
+											  lls_slt_monitor->lls_sls_alc_monitor->atsc3_lls_slt_service->service_id,
+											  lls_sls_alc_monitor,
+											  lls_sls_alc_monitor->atsc3_lls_slt_service->service_id);
+
+					if(lls_slt_alc_session->service_id == lls_sls_alc_monitor->atsc3_lls_slt_service->service_id) {
+						_ATSC3_LLS_ALC_UTILS_TRACE("lls_slt_alc_session_find_from_udp_packet: updating lls_slt_monitor->lls_sls_alc_monitor from: %p (service_id: %d) to: %p (service_id: %d)",
+												  lls_slt_monitor->lls_sls_alc_monitor, lls_slt_monitor->lls_sls_alc_monitor->atsc3_lls_slt_service->service_id,
+												  lls_sls_alc_monitor, lls_sls_alc_monitor->atsc3_lls_slt_service->service_id);
+						lls_slt_monitor->lls_sls_alc_monitor = lls_sls_alc_monitor;
+					}
+				}
 				_ATSC3_LLS_ALC_UTILS_TRACE("lls_slt_alc_session_find_from_udp_packet: matching, returning with %p", lls_slt_alc_session);
+
 				return lls_slt_alc_session;
 			}
 		}
@@ -121,6 +148,28 @@ lls_sls_alc_session_t* lls_slt_alc_session_find_from_udp_packet(lls_slt_monitor_
 	return NULL;
 }
 
+
+lls_sls_alc_monitor_t* atsc3_lls_sls_alc_monitor_find_from_udp_packet(lls_slt_monitor_t* lls_slt_monitor, uint32_t src_ip_addr, uint32_t dst_ip_addr, uint16_t dst_port) {
+	for(int i=0; i < lls_slt_monitor->lls_sls_alc_session_flows_v.count; i++) {
+		lls_sls_alc_session_flows_t* lls_sls_alc_session_flows = lls_slt_monitor->lls_sls_alc_session_flows_v.data[i];
+
+		for(int j=0; j < lls_sls_alc_session_flows->lls_sls_alc_session_v.count; j++ ) {
+			lls_sls_alc_session_t* lls_slt_alc_session = lls_sls_alc_session_flows->lls_sls_alc_session_v.data[j];
+
+			if((lls_slt_alc_session->sls_relax_source_ip_check || (!lls_slt_alc_session->sls_relax_source_ip_check && lls_slt_alc_session->sls_source_ip_address == src_ip_addr)) &&
+				lls_slt_alc_session->sls_destination_ip_address == dst_ip_addr && lls_slt_alc_session->sls_destination_udp_port == dst_port) {
+				_ATSC3_LLS_ALC_UTILS_TRACE("lls_slt_alc_session_find_from_udp_packet: matching, returning with %p", lls_slt_alc_session);
+				for(int k=0; k < lls_slt_monitor->lls_sls_alc_monitor_v.count; k++) {
+					lls_sls_alc_monitor_t* lls_sls_alc_monitor = lls_slt_monitor->lls_sls_alc_monitor_v.data[k];
+					if(lls_slt_alc_session->service_id == lls_sls_alc_monitor->atsc3_lls_slt_service->service_id) {
+						return lls_sls_alc_monitor;
+					}
+				}
+			}
+		}
+	}
+	return NULL;
+}
 
 lls_sls_alc_session_t* lls_slt_alc_session_find_from_service_id(lls_slt_monitor_t* lls_slt_monitor, uint16_t service_id) {
 	if(!lls_slt_monitor) {
@@ -194,6 +243,48 @@ atsc3_route_s_tsid.c:336:DEBUG:     S-TSID.RS.LS.source_flow.fdt-instance: versi
 atsc3_route_s_tsid.c:350:DEBUG:     S-TSID.RS.LS.source_flow.fdt-instance.file: content-location: test-1-init.mp4a, toi: 2100000000, content_length: 0, transfer_length: 0, content_type; (null), content_encoding: (null)
  *
  */
+
+/*
+ * jjustman-2020-03-10 - patch around RS missing dIpAddr and dPort if missing
+ *
+ * fixes spec gaps in A/331:2020 with regards to non-SLS carrying flows of media essense observed in the wild...
+ *
+ * <S-TSID xmlns="tag:atsc.org,2016:XMLSchemas/ATSC3/Delivery/S-TSID/1.0/" xmlns:afdt="tag:atsc.org,2016:XMLSchemas/ATSC3/Delivery/ATSC-FDT/1.0/" xmlns:fdt="urn:ietf:param
+s:xml:ns:fdt">
+    <RS sIpAddr="172.16.200.1">
+
+    @dIpAddr    0..1 stsid:IPv4addressType      Destination IP address of this ROUTE session; mandatory for ROUTE session other than session carrying SLS (session signaled in SLT); defaults to session carrying SLS.
+    @dPort      0..1 unsignedShort              Destination port of this ROUTE session; mandatory for ROUTE session other than session carrying SLS (session signaled in SLT); defaults to session carrying SLS.
+ */
+
+void lls_sls_alc_update_s_tsid_RS_dIpAddr_dPort_if_missing(udp_flow_t* udp_flow, lls_sls_alc_monitor_t* lls_sls_alc_monitor, atsc3_route_s_tsid_t* atsc3_route_s_tsid) {
+    if(!lls_sls_alc_monitor || !atsc3_route_s_tsid) {
+        _ATSC3_LLS_ALC_UTILS_ERROR("lls_sls_alc_session: %p, atsc3_route_s_tsid:%p returning!", lls_sls_alc_monitor, atsc3_route_s_tsid);
+        return;
+    }
+
+    char* content_type = NULL;
+
+    for(int i=0; i < atsc3_route_s_tsid->atsc3_route_s_tsid_RS_v.count; i++) {
+        atsc3_route_s_tsid_RS_t *atsc3_route_s_tsid_RS = atsc3_route_s_tsid->atsc3_route_s_tsid_RS_v.data[i];
+        if(!atsc3_route_s_tsid_RS->dest_ip_addr || !atsc3_route_s_tsid_RS->dest_port) {
+            _ATSC3_LLS_ALC_UTILS_WARN( "lls_sls_alc_update_s_tsid_RS_dIpAddr_dPort_if_missing: patching S-TSID.RS: RS: dIpAddr: %u, dPort: %u, sIpAddr: %u with new dIpAddr: %u, dPort: %u",
+                    atsc3_route_s_tsid_RS->dest_ip_addr,
+                    atsc3_route_s_tsid_RS->dest_port,
+                    atsc3_route_s_tsid_RS->src_ip_addr,
+                    udp_flow->dst_ip_addr,
+                    udp_flow->dst_port);
+            if(!atsc3_route_s_tsid_RS->dest_ip_addr) {
+                atsc3_route_s_tsid_RS->dest_ip_addr = udp_flow->dst_ip_addr;
+            }
+
+            if(!atsc3_route_s_tsid_RS->dest_port) {
+                atsc3_route_s_tsid_RS->dest_port = udp_flow->dst_port;
+            }
+        }
+    }
+}
+
 
 void lls_sls_alc_update_tsi_toi_from_route_s_tsid(lls_sls_alc_monitor_t* lls_sls_alc_monitor, atsc3_route_s_tsid_t* atsc3_route_s_tsid) {
 
