@@ -34,7 +34,7 @@ block_t* get_ip_frame_payload_from_raw_ether_filename(const char* file_name) {
 
 	FILE* fp = fopen(file_name, "r");
 	if(st.st_size < 14) {
-		__MMSM_ERROR("alc_get_payload_from_filename: size too small - must be greater than 14 - size: %lld file: %s", st.st_size, file_name);
+		__MMSM_ERROR("alc_get_payload_from_filename: size too small - must be greater than 14 - size: %"PRId64" file: %s", st.st_size, file_name);
 		return NULL;
 	}
 

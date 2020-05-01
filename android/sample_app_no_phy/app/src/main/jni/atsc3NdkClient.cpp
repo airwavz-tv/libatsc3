@@ -4,7 +4,7 @@
 #include <atsc3_phy_mmt_player_bridge.h>
 #include <atsc3_pcap_type.h>
 #include "atsc3NdkClient.h"
-#include "atsc3NdkClientNoPhyImpl.h"
+#include "atsc3NdkClientAirwavzRZR.h"
 
 
 #if DEBUG
@@ -52,7 +52,7 @@ vector<string> Split(const char *str, char delimiter = ' ') {
 }
 
 atsc3NdkClient api;
-atsc3NdkClientNoPhyImpl apiImpl;
+atsc3NdkClientAirwavzRZR apiImpl;
 
 int atsc3NdkClient::Init()
 {
@@ -66,8 +66,6 @@ int atsc3NdkClient::Prepare(const char *strDevListInfo, int delim1, int delim2)
 {
     // format example:  delim1 is colon, delim2 is comma
     // "/dev/bus/usb/001/001:21,/dev/bus/usb/001/002:22"
-
-
     return 0;
 }
 /*
@@ -224,8 +222,6 @@ int atsc3NdkClient::PcapProducerThreadParserRun() {
     return 0;
 }
 
-
-
 int atsc3NdkClient::PcapConsumerThreadRun() {
 
 
@@ -261,40 +257,35 @@ int atsc3NdkClient::PcapConsumerThreadRun() {
 
 int atsc3NdkClient::RxThread()
 {
-
     return 0;
-
-
 }
+
 
 int atsc3NdkClient::Tune(int freqKHz, int plpid)
 {
     apiImpl.Tune(freqKHz, plpid);
-
     return 0;
 }
 
 int atsc3NdkClient::Stop()
 {
-
     return 0;
 }
 
 int atsc3NdkClient::Reset()
 {
-
     return 0;
 }
 
 int atsc3NdkClient::Close()
 {
-
+    //apiImpl.Close();
     return 0;
 }
 
 int atsc3NdkClient::Uninit()
 {
-
+    apiImpl.Close();
     return 0;
 }
 
@@ -306,7 +297,7 @@ void atsc3NdkClient::atsc3_onMfuPacket(uint16_t packet_id, uint32_t mpu_sequence
     if (!JReady())
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
 
@@ -335,7 +326,7 @@ void atsc3NdkClient::atsc3_onMfuPacketCorrupt(uint16_t packet_id, uint32_t mpu_s
     if (!JReady())
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
 
@@ -364,7 +355,7 @@ void atsc3NdkClient::atsc3_onMfuPacketCorruptMmthSampleHeader(uint16_t packet_id
     if (!JReady())
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
 
@@ -391,7 +382,7 @@ void atsc3NdkClient::atsc3_onInitHEVC_NAL_Extracted(uint16_t packet_id, uint32_t
     if (!JReady())
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
 
@@ -426,7 +417,7 @@ void atsc3NdkClient::atsc3_signallingContext_notify_video_packet_id_and_mpu_time
     if (!JReady())
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
 
@@ -441,7 +432,7 @@ void atsc3NdkClient::atsc3_signallingContext_notify_audio_packet_id_and_mpu_time
     if (!JReady())
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
 
@@ -457,7 +448,7 @@ void atsc3NdkClient::atsc3_signallingContext_notify_stpp_packet_id_and_mpu_times
     if (!JReady())
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
 
@@ -471,7 +462,7 @@ void atsc3NdkClient::atsc3_onMfuSampleMissing(uint16_t pcaket_id, uint32_t mpu_s
     if (!JReady())
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
 
@@ -487,7 +478,7 @@ void atsc3NdkClient::LogMsg(const char *msg)
         return;
     CJniEnv env(mJavaVM);
     if (!env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
     jstring js = env.Get()->NewStringUTF(msg);
@@ -525,7 +516,7 @@ void atsc3NdkClient::atsc3_onAlcObjectStatusMessage(const char *fmt, ...)
     if (!JReady())
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
 
@@ -620,7 +611,7 @@ int atsc3NdkClient::PcapLocalCleanup() {
     if(global_pcap_asset_manager_ref) {
         CJniEnv env(mJavaVM);
         if (!env) {
-            eprintf("!! err on get jni env\n");
+            eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         } else {
             env.Get()->DeleteGlobalRef(global_pcap_asset_manager_ref);
         }
@@ -718,7 +709,7 @@ void atsc3NdkClient::atsc3_onExtractedSampleDuration(uint16_t packet_id, uint32_
     if (!JReady() || !mOnLogMsgId)
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
     int r = atsc3_jni_rx_thread_env->Get()->CallIntMethod(mClsDrvIntf, atsc3_onExtractedSampleDurationID,
@@ -735,7 +726,7 @@ void atsc3NdkClient::atsc3_setVideoWidthHeightFromTrak(uint32_t width, uint32_t 
     if (!JReady() || !mOnLogMsgId)
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
     int r = atsc3_jni_rx_thread_env->Get()->CallIntMethod(mClsDrvIntf, atsc3_setVideoWidthHeightFromTrakID, width, height);
@@ -923,7 +914,7 @@ void atsc3NdkClient::atsc3_lls_sls_alc_on_route_mpd_patched_jni(uint16_t service
     if (!JReady() || !atsc3_lls_sls_alc_on_route_mpd_patched_ID)
         return;
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
     int r = atsc3_jni_rx_thread_env->Get()->CallIntMethod(mClsDrvIntf, atsc3_lls_sls_alc_on_route_mpd_patched_ID, service_id);
@@ -932,13 +923,13 @@ void atsc3NdkClient::atsc3_lls_sls_alc_on_route_mpd_patched_jni(uint16_t service
 
 void atsc3NdkClient::atsc3_onSlsTablePresent(const char *sls_payload_xml) {
     if (!JReady() || !atsc3_onSlsTablePresent_ID) {
-        eprintf("err: JReady: %d, atsc3_onSlsTablePresent_ID: %d",  JReady(), atsc3_onSlsTablePresent_ID);
+        eprintf("err: JReady: %d, atsc3_onSlsTablePresent_ID: %d",  JReady(), (int)atsc3_onSlsTablePresent_ID);
 
         return;
     }
 
     if (!atsc3_jni_rx_thread_env) {
-        eprintf("!! err on get jni env\n");
+        eprintf("!! %s:%d %s err on get jni env\n", __FILE__, __LINE__, __FUNCTION__);
         return;
     }
 
@@ -1124,7 +1115,7 @@ Java_org_ngbp_libatsc3_sampleapp_atsc3NdkClient_ApiOpen(JNIEnv *env, jobject ins
     int addr = key & 0xFF;
 
     printf("Java_org_ngbp_libatsc3_sampleapp_atsc3NdkClient_ApiOpen: invoking open with fd: %d, key: %d, bus: %d, addr: %d",
-            fd, key, bus, addr);
+           (int)fd, (int)key, bus, addr);
 
     api.Open(fd, bus, addr);
 
@@ -1341,9 +1332,9 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_org_ngbp_libatsc3_sampleapp_atsc3NdkClient_setRfPhyStatisticsViewVisible(JNIEnv *env, jobject thiz, jboolean is_rf_phy_statistics_visible) {
     if(is_rf_phy_statistics_visible) {
-        atsc3NdkClientNoPhyImpl::tunerStatusThreadShouldPollTunerStatus = true;
+        atsc3NdkClientAirwavzRZR::tunerStatusThreadShouldPollTunerStatus = true;
     } else {
-        atsc3NdkClientNoPhyImpl::tunerStatusThreadShouldPollTunerStatus = false;
+        atsc3NdkClientAirwavzRZR::tunerStatusThreadShouldPollTunerStatus = false;
     }
 
     return 0;

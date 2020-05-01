@@ -1463,18 +1463,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, " --" + d.toString());
             Log.d(TAG, "   vid/pid: " + d.getVendorId() + "/" + d.getProductId() +
                     " id " + d.getDeviceId() + " name " + d.getDeviceName());
-            if (isDeviceCypressFX3(d) || isDeviceBootedFX3(d)) {
+            if (isDeviceRZR1200(d) || isDeviceRZR1400(d)) {
                 devices.add(d);
             }
         }
 
         if (devices.isEmpty()) {
             showMsg("No device\n");
-            Toast.makeText(getApplicationContext(), "No FX3 detected!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "No RedZone Receiver detected!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Log.d(TAG, "total " + devices.size() + " FX3 device found");
+        Log.d(TAG, "total " + devices.size() + " RedZone Receiver devices found");
 
         for (UsbDevice d : devices) {
             if (!mUsbManager.hasPermission(d)) {
@@ -1623,10 +1623,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //atlas         if (vid == 0xf055 && pid == 0x1e1b) return true;
 
     //mVendorId=1204,mProductId=240 CyFX3
-    private boolean isDeviceBootedFX3(UsbDevice device) {
+    private boolean isDeviceRZR1200(UsbDevice device) {
         int vid = device.getVendorId();
         int pid = device.getProductId();
-        if (vid == 0x04b4 && pid == 0x00F0) {
+        if (vid == 0x16D0 && pid == 0x0DAC) {
             return true;
         } else {
             return false;
@@ -1635,11 +1635,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //mVendorId=1204,mProductId=243 CyFX3
     //pid == 0x00f3??
-    private boolean isDeviceCypressFX3(UsbDevice device) {
+    private boolean isDeviceRZR1400(UsbDevice device) {
         int vid = device.getVendorId();     //1204 -> 0x04b4
         int pid = device.getProductId();    //0x00F0
 
-        if (vid == 0x04b4 && pid == 0x00F3) {
+        if (vid == 0x16D0 && pid == 0x0E99) {
             return true;
         } else {
             return false;
@@ -1673,7 +1673,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 synchronized (this) {
                     UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device == null) { Log.e(TAG, "null device!"); return; }
-                    if (!isDeviceBootedFX3(device) && !isDeviceCypressFX3(device)) return;
+                    if (!isDeviceRZR1200(device) && !isDeviceRZR1400(device)) return;
                     dumpDevice(device, " has permission");
 
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
@@ -1692,7 +1692,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 synchronized (this) {
                     UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device == null) { Log.e(TAG, "null device!"); return; }
-                    if (!isDeviceBootedFX3(device) && !isDeviceCypressFX3(device)) return;
+                    if (!isDeviceRZR1200(device) && !isDeviceRZR1400(device)) return;
                     dumpDevice(device, " attached");
 
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
@@ -1723,7 +1723,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 synchronized (this) {
                     UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device == null) { Log.e(TAG, "null device!"); return; }
-                    if (!isDeviceBootedFX3(device) && !isDeviceCypressFX3(device)) return;
+                    if (!isDeviceRZR1200(device) && !isDeviceRZR1400(device)) return;
                     dumpDevice(device, " detached");
                     disconnectDevice(device);
                     //prepareDevices();
